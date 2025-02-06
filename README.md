@@ -45,13 +45,13 @@ class BaseHandler(RequestHandler):
 
 
 class HomeHandler(BaseHandler):
-	def get(self, userId=None):
-		if userId:
-			self.respond({"message": f"Successful GET from HomeHandler! -> userId: {userId}"})
+    def get(self, userId=None):
+        if userId:
+            self.respond({"message": f"Successful GET from HomeHandler! -> userId: {userId}"})
 
-			return
+            return
 
-		self.respond({"message": f"Successful GET from HomeHandler!"})
+        self.respond({"message": f"Successful GET from HomeHandler!"})
 
     def post(self):
         self.respond({"message": f"Successful POST to HomeHandler! -> {self.params}"}, 201)
