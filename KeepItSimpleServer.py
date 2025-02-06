@@ -26,11 +26,17 @@ class RequestHandler(SimpleHTTPRequestHandler):
 
 	def do_PREPARE(self):
 		if hasattr(self, "prepare"):
-			getattr(self, "prepare")()
+			try:
+				getattr(self, "prepare")()
+			except Exception:
+				raise
 
 	def do_ON_FINISH(self):
 		if hasattr(self, "on_finish"):
-			getattr(self, "on_finish")()
+			try:
+				getattr(self, "on_finish")()
+			except Exception:
+				raise
 
 	def handle_request(self, method):
 		handler_class = None
@@ -54,10 +60,7 @@ class RequestHandler(SimpleHTTPRequestHandler):
 		if handler_class:
 			self.__class__ = handler_class
 
-			try:
-				self.do_PREPARE()
-			except Exception as e:
-				self.send_error(500, f"{e}")
+			self.do_PREPARE()
 
 			if hasattr(self, method):
 				method_func = getattr(self, method)
@@ -65,14 +68,17 @@ class RequestHandler(SimpleHTTPRequestHandler):
 				try:
 					method_func(*path_params)
 
-					self.do_ON_FINISH()
 				except Exception as e:
-					self.do_ON_FINISH()
 					self.send_error(500, f"{e}")
 
+					return
+
 			else:
-				self.do_ON_FINISH()
 				self.send_error(405, "Method not allowed")
+
+				return
+
+			self.do_ON_FINISH()
 
 		else:
 			self.send_error(404, "Not found")
