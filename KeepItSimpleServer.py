@@ -53,7 +53,7 @@ class RequestHandler(SimpleHTTPRequestHandler):
 
 			if match:
 				handler_class = handler
-				path_params = match.groups()
+				path_params = self.parse_path_params(match.groups())
 
 				break
 
@@ -104,6 +104,9 @@ class RequestHandler(SimpleHTTPRequestHandler):
 				return {}
 
 		return {}
+
+	def parse_path_params(self, path_params):
+		return [int(param) if param.isdigit() else param for param in path_params]
 
 	def send_error(self, code, message=None):
 		self.send_json_response({"error": message or "Unknown error"}, status=code)
